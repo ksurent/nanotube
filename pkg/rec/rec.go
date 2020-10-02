@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unsafe"
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -110,7 +111,7 @@ func normalizePath(s string) string {
 	}
 	// check for string consisting only of points was done before
 
-	var b strings.Builder
+	b := make([]byte, 0, end-start)
 	for i := start; i <= end; i++ {
 		if s[i] == '.' {
 			// a dot cannot be the last char
@@ -120,14 +121,13 @@ func normalizePath(s string) string {
 		}
 
 		if validChar(s[i]) {
-			b.WriteByte(s[i])
+			b = append(b, s[i])
 		} else {
-			b.WriteRune('_')
+			b = append(b, '_')
 		}
 	}
 
-	res := b.String()
-	return res
+	return *(*string)(unsafe.Pointer(&b))
 }
 
 func validChar(c byte) bool {

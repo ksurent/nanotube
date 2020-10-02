@@ -177,7 +177,8 @@ func TestRec(t *testing.T) {
 	}
 }
 
-func TestNormalization(t *testing.T) {
+func TestNormalization(t *testing.T) { testNormalization(t) }
+func testNormalization(t testing.TB) {
 	tt := []struct {
 		in  string
 		out string
@@ -229,6 +230,13 @@ func TestNormalization(t *testing.T) {
 		if s != test.out {
 			t.Fatalf("Got %s after normalization of %s, expected %s", s, test.in, test.out)
 		}
+	}
+}
+
+func BenchmarkNormalization(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		// This also benches string comparison in the test, but let's keep it simple.
+		testNormalization(b)
 	}
 }
 
